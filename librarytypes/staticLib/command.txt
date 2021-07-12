@@ -1,0 +1,6 @@
+gcc -c main.c -o main.o
+gcc -c foo.c -o foo.o
+
+ar rs -o libfoo.a foo.o
+
+gcc main.o -L . -lfoo
