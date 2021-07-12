@@ -1,6 +1,10 @@
-gcc -c main.c -o main.o
+//generate object files
+gcc -c main.c foo.h -o main.o
+
 gcc -c foo.c -o foo.o
 
+//generate static lib file
 ar rs -o libfoo.a foo.o
 
+//use static lib file
 gcc main.o -L . -lfoo

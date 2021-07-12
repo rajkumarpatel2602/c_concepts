@@ -1,0 +1,18 @@
+// Compile with the switch -- position independent code
+gcc -c -fPIC main.c foo.h foo.c
+
+// Create shared library
+gcc foo.o -shared -o libfoo.so
+
+// Position library to known paths
+cp libfoo.so /usr/lib/  // or /usr/local/lib/
+
+// Instruct the machine to go for this location to search library
+sudo ldconfig
+
+// Craete executable
+gcc main.o -lfoo
+
+// Run
+./a.out
+
