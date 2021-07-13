@@ -1,3 +1,3 @@
 //declaration for library functions
 //
-void foo(void);
+void foo1(void);

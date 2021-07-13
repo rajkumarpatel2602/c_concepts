@@ -1,16 +1,23 @@
-
-
+# Final executable
 main.exe : 	main.o libfoo1.a libfoo2.a
-			gcc main.o -o main.exe -L . -lfoo1 -L . -lfoo2
+			gcc main.o -L . -lfoo1 -lfoo2 -o main.exe
 
-main.o : main.c foo.h
-		gcc -c main.c foo.h
+# Build main file
+main.o : main.c
+		gcc -c main.c -o main.o -I lib1/headers lib2/headers # No need to share makefile, one can add header paths
 
-libfoo1.a : lib1/foo1.c 
-		 	ar rs -o libfoo1.a lib1/foo1.c
+# Generate static library :: libfoo1.a
+libfoo1.a : libfoo1.o
+		 	ar rs -o libfoo1.a libfoo1.o
+libfoo1.o : lib1/foo1.c
+			gcc -c lib1/foo1.c -o libfoo1.o
 
-libfoo2.a : lib2/foo2.c
-		 	ar rs -o libfoo2.a lib2/foo2.c
-			
+# Generate static library :: libfoo2.a
+libfoo2.a : libfoo2.o
+		 	ar rs -o libfoo2.a libfoo2.o
+libfoo2.o : lib2/foo2.c
+		 	gcc -c lib2/foo2.c -o libfoo2.o
+
+# Clean up built files
 clean:
-		rm -rf *.o *.a *.gch *.exe
+	rm -rf *.o *.a *.gch *.exe
