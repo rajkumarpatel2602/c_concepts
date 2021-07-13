@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "lib1/headers/foo1.h"
-#include "lib2/headers/foo2.h"
+#include <foo1.h>
+#include <foo2.h>
 
 
 int

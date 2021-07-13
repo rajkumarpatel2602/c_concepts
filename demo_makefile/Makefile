@@ -4,7 +4,7 @@ main.exe : 	main.o libfoo1.a libfoo2.a
 
 # Build main file
 main.o : main.c
-		gcc -c main.c -o main.o -I lib1/headers lib2/headers # No need to share makefile, one can add header paths
+		gcc -c main.c -o main.o -I lib1/headers -I lib2/headers # No need to share makefile, one can add header paths
 
 # Generate static library :: libfoo1.a
 libfoo1.a : libfoo1.o
