@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include "foo.h"
 
-int main(void){
-    printf("inside main!\n");
+int
+main (void)
+{
+  printf ("inside main!\n");
 
-    //call function belong to static lib
-    foo();
+  //call function belong to static lib
+  foo ();
 }

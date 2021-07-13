@@ -1,5 +1,7 @@
 #include <stdio.h>
 
-void foo(){
-    printf("Foo function called!");
+void
+foo ()
+{
+  printf ("Foo function called!");
 }
