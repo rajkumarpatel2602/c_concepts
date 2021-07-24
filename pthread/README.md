@@ -108,5 +108,48 @@ When a thread is created it can be started in two modes. joinable or detachable.
 -- Joinee thread or parent thread may also collect return values from joinable.
 
 - *Detached Thread*
-There's no need to joining on exit of child thread. and no need to block parent thread using pthred_join. resources are released as soon as thread terminates.
+There's no need to joining on exit for child thread. and no need to block parent thread using pthred_join. resources are released as soon as thread terminates.
 -- No need to return result to main thread. It donesn't notify parent thread.
+
+-- If a joinable thread is terminating then it will signal any threads who is waiting using pthread_join() api.
+-- Thread can wait for the joinable thread only. Thread can not wait for detached thread.
+
+- What is map-reduce?
+programming conecpt based on divide and conquere paradigm.
+-- mapper -- worker threads
+-- reducer thread -- moderator thread or a thread which waits on mappers.
+
+- When to use joinable thread?
+-- if a thread is supposed to notify the parent or other thread, or it requires to return result to some other thread.
+
+- When to use detached thread?
+-- Independent worker which is not supposed to notify or provide results to anyone, then such threads should be made detached while creation.
+-- when nobody care about thread's death.
+e.g. -- All infinite loop threads.
+thread waiting in while for netowrk packet or user Input
+-- TCP server's worker thread working with tcp clients, mostly.
+
+- Thread communincations
+-- All IPCs can be used. i.e. sockets, MQ, Shared memory, Pipes.
+-- Callbacks, and function pointers. Because, this is faster, no data transfer but transfer of computation. No kernel resource requirements or supports, and completely run in user-space.
+
+- Notification function chain model
+-- publisher -- who generates data
+-- subscriber -- who owns method to operate on
+-- notification -- calling a function pointer or callback.
+-- TOC -- transfer of computations -- activity of TOC is callback registration.
+
+- What is Notification chain?
+-- It is an architectural concept(communication pattern) and used to notify multiple subscribers for the events they are interested in. It's a design patterns.
+-- Event generator -- publishers
+-- Party which gets notified on events -- subscribers.
+-- one pub and multiple subs.
+-- pub/sub can be threads in same process, threads in different processes, could be different processes on different machines or different software parts of a huge stack.
+-- pub pushes event to the subs.
+-- sub may register or de-register for the events on their will.
+
+- Publisher are the owner of some data source. e.g. routing table as data source.
+- subs are the applications or software piece which is interested in data source owned by the publiser.
+
+
+- Notification chain is a linkedList of the topics of subscribers' interest as the key and callbacks provided by the subs to get invoked while the key(topic) gets some update.It is a database or linkedList maintained by the publisher.
