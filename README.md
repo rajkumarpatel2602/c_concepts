@@ -11,6 +11,6 @@ This repository contains all the snippets for C programming concepts
    - foo_bar.c and foo_bar.h , like that .c and .h should be used in pairing.
 
 * general rule
-- No abbreviation should be used. if used at all, then check if it is available in wikipedia and wordly known.
-- if there's abbreviation while naming, then ignore using capital words for abbreviated term. e.g. use SomeRpc , rather than SomeRPC.
+   - No abbreviation should be used. if used at all, then check if it is available in wikipedia and wordly known.
+   - if there's abbreviation while naming, then ignore using capital words for abbreviated term. e.g. use SomeRpc , rather than SomeRPC.
 
