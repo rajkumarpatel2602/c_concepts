@@ -153,3 +153,49 @@ thread waiting in while for netowrk packet or user Input
 
 
 - Notification chain is a linkedList of the topics of subscribers' interest as the key and callbacks provided by the subs to get invoked while the key(topic) gets some update.It is a database or linkedList maintained by the publisher.
+
+
+
+* What is critical section?
+Code using shared data structures
+Heap, static, socket, global vars
+
+* what are Conflicting operations?
+RW and WW
+
+* What is Thread synchronization?
+Its a technique to prevent concurrent access to shared resources by several threads.
+
+* what is Mutex?
+Tool for thread synschronization.
+Mutual exclusion.
+e.g. Key and bank locker
+
+code
+`
+Pthread_mutex_t mutexOb;
+Pthreas_mutex_lock(&mutexOb)
+CR
+Pthread_mutex_unlock(&mutexOb)
+`
+
+* Points to remember
+- If mutexOb is acquired then other threads trying to lock it will get blocked.
+- Thread who owns the mutex must not intentionally die. As mutex will not be free ever. And deadlock will occur.
+- Bigger the CR or CS,
+- Larger the time threads has to wait.
+- Locking and unlocking adds the cpu overheads.
+
+* Rules.
+- If T1 locks then, it only has to unlock.
+- If mutex is locked by 1 thread then others trying to lock or acquire will go into blocked state.
+- Unlocking/locking an already unlocked/locked mutex will result in undefined behaviour/seld-deadloacked.
+- LIFO order of locking and unlocking mutex.
+
+* Locking types
+Code and object locking
+Code — CR is made up of several instructions.
+
+Object - Data locking
+When there are chances that out of many particular DS will be shared then that data structure will have mutex within and Threads will lock that per DS mutex and use it in the CR.
+Make sure this DS is not memcopied as mutex is one of its member. Otherwise behaviour would be undefined.
