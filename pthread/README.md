@@ -199,3 +199,31 @@ Code — CR is made up of several instructions.
 Object - Data locking
 When there are chances that out of many particular DS will be shared then that data structure will have mutex within and Threads will lock that per DS mutex and use it in the CR.
 Make sure this DS is not memcopied as mutex is one of its member. Otherwise behaviour would be undefined.
+
+* Deadlocks
+Necessary Conditions
+-- Mutual exclusion : only one thread can be in CR or use resource which are not shareable at a single instance.
+-- Hold and wait : a resource is holding atleast one resource and waiting on other resource.
+-- No preemption : a resource can not be taken away from the resource unless thread release the resource.
+-- Circular wait : a set of threads are waiting for resources in ciruclar fashion.
+
+* Order of mutex acquisition matters
+If thread 1 is acquiring mutex1 first and mutex2 second, then other thread should have same order of mutex
+acqusition in its execution path. ie. mutex1 followed by mutex2. otherwise (mutex2 followed by mutex1) will
+create deadlock condition.
+
+//T1 executes
+foo1(){
+    lock(&m1)
+    // do something
+    lock(&m2)
+}
+
+// T2 executes
+foo2(){
+    lock(&m2)
+    // do something
+    lock(&m1)
+}
+
+* 
