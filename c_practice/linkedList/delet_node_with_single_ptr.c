@@ -33,22 +33,26 @@ void add_ll(node_t **head, int data){
 	}
 }
 
-node_t *head= NULL;
-
+// code with slow and fast pointers
 void delete_node(node_t **head, int data){
 	//if node is headnode
-	node_t *temp = *head;
-	if(temp->data == data){
-		*head = temp->next;
-		free(temp);
+	node_t *slow = NULL, *fast = *head;
+	for(; fast && (fast->data != data); slow = fast, fast = fast->next);
+	if(fast != NULL){
+		if (fast == *head){
+			*head = fast->next;
+		}
+		else{
+			slow->next = fast->next;
+			free(fast);
+		}
+	}else{
+		printf("No such node found\n");
 	}
-	else{
-		//WIP
-	}
-
 }
 
 int main(int argc, char* argv[]){
+	node_t *head= NULL;
 	add_ll(&head, 10);
 	add_ll(&head, 20);
 	add_ll(&head, 30);
