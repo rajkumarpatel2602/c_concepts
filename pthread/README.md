@@ -405,7 +405,7 @@ t3               .....                  sem_wait(&sem);// make sure x is initial
                  .....                    .......
 t4          sem_post(&sem)                .......
 
-        
+*        
 
 
 
