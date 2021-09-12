@@ -405,7 +405,11 @@ t3               .....                  sem_wait(&sem);// make sure x is initial
                  .....                    .......
 t4          sem_post(&sem)                .......
 
-*        
+* Strict alternation
+Strict alternation is the way of doing work using a pair of threads in alternate manner.
+Strict alternation uses zero semaphore for its application.
+e.g. sem_init(&sem, 0 , 0);
+always post is bound to happen by a starting thread and making other thread wait for post by started thread.
 
 
 
