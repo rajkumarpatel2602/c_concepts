@@ -153,3 +153,264 @@ thread waiting in while for netowrk packet or user Input
 
 
 - Notification chain is a linkedList of the topics of subscribers' interest as the key and callbacks provided by the subs to get invoked while the key(topic) gets some update.It is a database or linkedList maintained by the publisher.
+
+
+
+* What is critical section?
+Code using shared data structures
+Heap, static, socket, global vars
+
+* what are Conflicting operations?
+RW and WW
+
+* What is Thread synchronization?
+Its a technique to prevent concurrent access to shared resources by several threads.
+
+* what is Mutex?
+Tool for thread synschronization.
+Mutual exclusion.
+e.g. Key and bank locker
+
+code
+`
+Pthread_mutex_t mutexOb;
+Pthreas_mutex_lock(&mutexOb)
+CR
+Pthread_mutex_unlock(&mutexOb)
+`
+
+* Points to remember
+- If mutexOb is acquired then other threads trying to lock it will get blocked.
+- Thread who owns the mutex must not intentionally die. As mutex will not be free ever. And deadlock will occur.
+- Bigger the CR or CS,
+- Larger the time threads has to wait.
+- Locking and unlocking adds the cpu overheads.
+
+* Rules.
+- If T1 locks then, it only has to unlock.
+- If mutex is locked by 1 thread then others trying to lock or acquire will go into blocked state.
+- Unlocking/locking an already unlocked/locked mutex will result in undefined behaviour/seld-deadloacked.
+- LIFO order of locking and unlocking mutex.
+
+* Locking types
+Code and object locking
+Code — CR is made up of several instructions.
+
+Object - Data locking
+When there are chances that out of many particular DS will be shared then that data structure will have mutex within and Threads will lock that per DS mutex and use it in the CR.
+Make sure this DS is not memcopied as mutex is one of its member. Otherwise behaviour would be undefined.
+
+* Deadlocks
+Necessary Conditions
+-- Mutual exclusion : only one thread can be in CR or use resource which are not shareable at a single instance.
+-- Hold and wait : a resource is holding atleast one resource and waiting on other resource.
+-- No preemption : a resource can not be taken away from the resource unless thread release the resource.
+-- Circular wait : a set of threads are waiting for resources in ciruclar fashion.
+
+* Order of mutex acquisition matters
+If thread 1 is acquiring mutex1 first and mutex2 second, then other thread should have same order of mutex
+acqusition in its execution path. ie. mutex1 followed by mutex2. otherwise (mutex2 followed by mutex1) will
+create deadlock condition.
+
+//T1 executes
+foo1(){
+    lock(&m1)
+    // do something
+    lock(&m2)
+}
+
+// T2 executes
+foo2(){
+    lock(&m2)
+    // do something
+    lock(&m1)
+}
+
+* Theread cancellation requests are sent by the thread residing in the same process.
+
+Thread cancellation can be of two types
+1. Async cancellation
+- request of cancellation is delivered to the OS. OS enqueue the request and deliever to the target thread when it gets time.
+- there will be time difference between request submission and request execution.
+2. Deferred cancellation
+
+* Making a thread cancellable
+threads can be cancellable but need to define while creating the thread or can be set by pthread_setcancelthread -- PTHREAD_CANCEL_ENABLE and mode of cancellation -- PTHREAD_CANCEL_ASYNCHRONOUS in pthread_setcanceltype() -- can be set in the thread function. these APIs do not take the thread_id as args. so whoever call this api will become cancellable thread.
+
+pthread_cancle will help only if thread is cancellable to cancle the thread.
+
+* Problems with Async cancellation
+1. Resource leaking -- not releasing file descriptors and heap memory.
+solution to this problem is using cleanup handlers.
+2. cause invariants -- corruption in data structures
+suppose thread was working on a linkedlist and modifying it and if it terminates, list will be inconsistent state or invariant.
+cancelling thread while it has initiated the system call. systecall gets terminated and it may lead to kernel corruption or issues.
+3. deadlocks -- mutex left locked and left for forever as thread died.
+Mutex is locked and then thread terminates. horrible thing will happen if someone try to lock this acquired mutex.
+2nd and 3rd problems can be avoided using cancellation points.(only Deferred cancellation).
+
+* POSIX provides interface called thread cleanup handlers to prevent the resource leaking.
+(void)(* cleanup_handlers)(void *)
+only after return of these clean-up handlers threads can terminate.
+Way to call these cleanup function
+
+//Thread1(){
+//    ...
+//    pthread_cleanup_push(f1, arg1);
+//    ...
+//    pthread_cleanup_push(f2, arg2);
+//    ...
+//    ...
+//    ...
+//    pthread_cleanup_pop(0); // developer has to pop the stack incase thread doesn't
+//    pthread_cleanup_pop(0); // get any cancel request and terminate naturally.
+//}
+
+* passing n = 0 in pop call means just pop out the cleanup handler from stack.
+* passing n = ~0 means pop out and also call the handler.
+
+* pthread_cleanup_push() and pop() are nothing but macros.
+and hence, your thread function should have push and pop counts same.
+e.g.
+//Thread1(){
+//    ...
+//    {
+//      some code here from push(f1)
+//    ...
+//    {
+//      some code here from push(f2)
+//    ...
+//    ...
+//    ...
+//      some code here from push(f2)
+//    }
+//      some code here from push(f2)
+//    }
+//}
+
+* pthread_exit() also invoke the clean up functions but not when thread exit with virture of `return` statement.
+better to always handle exit with pthread_exit() call rather than normal return in a thread function or
+use goto statement to jump on pop() calls.
+
+* Deferred cancellation
+Method to control as to which point in the execution flow of the thread , the thread is allowed to be cancelled.
+Used to handle the problem of invariants.
+
+* Cancellation points -- instrurcutions at which a thread can be cancelled.
+Developer decides to put the cancellation point.
+
+e.g. suppose at point p1 cancellation request has come.
+//Thread1(){
+//    ...
+//    p1
+//    ...
+//    ...
+//    p2
+//    ...
+//    ...
+//    ...
+//    p3  // pthread_testcancel() 
+//        // cancallation point. -- Test if any cancellation request is pending or not.
+//        // if yes then invoke the clean up handlers and cancel the thread.
+//    ...
+//    ...
+//    ...
+//}
+    
+* Choose Cancellation point wisely that we don't face issue of RL/Variants/Deadlocks.
+
+* Semaphores
+Usage : resource allocatin among multiple requesters.
+e.g. Invited 13 Guests on party, but party hall has capacity of 10G.
+3G will be in waiting list. if any from 10 entered guest will leave the hall
+then waiting list will be checked and 1G will be allowed to enter.
+        ----------------
+watiing |               |               party hall == shared resource
+list    |               |               Guest == threads competing for the resource.
+--------                ------------
+ 3G           10G           
+--------                ------------
+        |               |
+        |  party hall   |
+        ----------------
+
+* Mutex vs Semaphore
+
+        Mutex (Permit number == 1)                  Semaphore ( PN == n )
+
+C.S  ------------------------------         --------------------------------
+
+        only 1 execution unit                   n execution units or threads
+         or thread at a time                        at a time permitted.
+
+C.S  ------------------------------         --------------------------------
+
+* Mutex is the special case of semaphore and sometimes also referred as
+binary semaphore.
+Semaphore allows user to decide permit numbers wherease mutex doesn't allow.
+
+* Semaphore allows multiple threads to run inside CR/CS at a time.
+this may lead to problem of invariants. so developer has to be very
+cautious that CS/CR is as such that, being executed by multiple threads
+at a time won't make any issue. //re-entrant code????!!!
+
+* semaphore APIs
+1. sem_t sem;
+/* Declare semaphore variable */
+2. sem_init(sem_t * sem, int pshared, int permit_counter);
+/* Initialise semaphore variable */
+set pshared = 0 for threads, for precess give ~0 value.
+3. sem_wait(sem_t * sem);
+/* block calling thread or process if semaphore is not available */
+4. sem_post(sem_t * sem);
+/*  signal the blocked theread on semaphore */
+5. sef_destroy(sem_t * sem);
+/* destroy the thrad after use */
+
+* Working of semaphore
+
+       Semaphore ( PN == n )
+     
+        sem_wait(&sem) // Unconditionally decrease PC by 1 and allow if PC >= 0 and blcok if PC<0 the thread/process.
+ --------------------------------
+
+     n execution units or threads
+         at a time permitted.
+
+        sem_post(&sem) // Unconditionally increament PC by 1 and send signal to thread waiting on sem_wait() call, if any.
+ --------------------------------
+If any thread is waiting on the sem receives the signal from thread relaseing semaphore whill simply enters the CS without 
+touching the permit count. // this will help to level the count which was changed when sem_wait() was called by blocked thread.
+
+* PC = 1 means mutx == semaphore with just one difference.
+semaphore can be released by different thread.
+Semaphore uses signaling mechanism, where as mutex doesn't.
+which thread enters the CS will only exit after releasing mutex, where as for semaphore this is not true.
+
+* Semaphore are also used for preocess synchronization
+
+thread 1 init a vairable 'X' and it has to be used by 2nd thread or process
+only after its initialization.
+
+time 
+
+t1        1st thread/process        2nd thread/process
+t2          sem_wait(&sem)                .......
+                 .....                    .......
+t3               .....                  sem_wait(&sem);// make sure x is initialised.
+                 .....                  while (X){
+                 .....                    .......
+                 .....                    .......
+            set X = Value;                .......                  
+                 .....                    .......
+t4          sem_post(&sem)                .......
+
+* Strict alternation
+Strict alternation is the way of doing work using a pair of threads in alternate manner.
+Strict alternation uses zero semaphore for its application.
+e.g. sem_init(&sem, 0 , 0);
+always post is bound to happen by a starting thread and making other thread wait for post by started thread.
+
+
+
+
