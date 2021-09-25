@@ -442,4 +442,69 @@ Mutex is all about Mutual exclusion
 and CV is about checking if conditions are met or not. if met then only allow acces otherwise block the call. CV + Mutex always used together.
 CV is used for co-ordination between threads. pthread_cond_wait is used to block thread if condition is not met. pthread_cond_signal is used to signal blocked thread.
 
+Aquiring CV :
+1. lock the mutex : pthrad_mutex_lock(&mutex);
+2. wait on cv : pthread_cond_wait(&cv, &mutex); // mutex is released internally and then thread  wait on CV to get signalled by someother thread.
 
+
+relasing CV :
+1. lock the mutex : pthrad_mutex_lock(&mutex);
+2. signal the conditional variable (cv): pthread_cond_signal(&cv); // sends the signal to CV
+3. CV on signal, make the receiving thread awake -- and moved to ready state and wait for mutex release from signaling therad.
+4. signalling thread releases the mutex : pthrad_mutex_unlock(&mutex); // making the signalled thread in execution.
+5. As mutex is again made available, receiving thread will acquire the mutex and will do its work happily.
+
+T1 :
+
+pthread_mutex_t mutex;
+pthread_cond_t cv;
+
+pthread_mutex_init(&mutex, NULL);
+pthread_cond_init(&cv, NULL);
+
+....
+printf("T1 is going to be blocked by wait call!\n");
+pthread_mutex_lock(&mutex);
+// may have predicate here
+// if(queue_empty()){ // use while() to avoid spurious wakeups.
+pthread_cond_wait(&cv, &mutex);// make the thread halt and mutex release internally.
+// predicate block may end here. predicate is used to check the state of the resource.
+// Execute your CR.
+printf("T1 got awakened on singal from T2");
+pthread_mutex_unlock(&mutex);
+....
+
+
+T2:
+....
+printf("T2 is going to signal T1!\n");
+pthread_mutex_lock(&mutex);
+pthread_cond_signale(&cv);// signal the T1 and make the thread in ready state. suppos T1 is now in ready state and T3 is also there is makeing predicate condition go false then, it will be a suprious wakeup for thread T1.
+pthread_mutex_unlock(&mutex);
+....
+
+Producer and consumer dealing with a single queue can be impletemeted using CV and mutex very effectively.
+
+- Spurious wakeups
+When a thread is unblocked by signal, may resume execution due to a reason which is no more valid.
+
+
+pseudo codes for producer consumer probelm.
+
+consumer :
+
+pthread_mutex_lock(&mutex)
+while(!predicate()){
+    pthread_cond_wait(&cv, &mutex);    
+}
+execute_cr_code_or_ds(); // working on shared queue may be the ds.
+pthread_mutex_unlock(&mutex)
+
+producer :
+
+pthread_mutex_lock(&mutex)
+if(predicate()){
+    execute_cr_code_or_ds();
+    pthread_cond_signal(&cv);
+}
+pthread_mutex_unlock(&mutex)
