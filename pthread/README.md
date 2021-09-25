@@ -412,5 +412,34 @@ e.g. sem_init(&sem, 0 , 0);
 always post is bound to happen by a starting thread and making other thread wait for post by started thread.
 
 
+semaphores can be used by
+conditional variables and mutex. 
+
+types of semaphores
+1. unnamed and -- sync between threads and related processes // fork and named pipe and for threads
+2. named semaphores. // used for unrelated process -- also for related.
+
+mutex and CV are used for threads of the same process.
+unnamed semaphores are used for threads and related processes
+named semaphores are used for threads and related-unreleated processes.
+
+semaphores
+1. weak -- semaphore not gaurantee that all threads blocks on it will get CS and CPU at somepoint then that semaphore is called weak semaphore. -- bounded waiting is required to reduce starvation of threads. // T1, T2, T3 waiting to enter. - signal --> T1 in CS. T4, T2, T3 in waiting. - signale --> T4 enters and T5, T2, T3 in waiting. 
+T2 and T3 are starving due to randomness in choosing the thread to get enter in CS on signal reception.
+2. strong -- implement FIFO for unblocking thread. and hence system would have bounded waiting -- finite amount of waiting time. it gaurantee that all the threads will get CS at some point.
+
+conditional variables :
+allows us to have the finer control over taking the decision on when and which competing thread should be unblocked/resumed.
+i.e. thread T1 is waiting on the empty queue for the element to get populated in the queue.
+
+Mutex can block on mutex availability only
+CV can block based on user variable or user defined condition's matching. on matting the condition it can also wake-up the thread waiting for the resource.
+
+Advanced thread sync schemes are implemented using semphores + CV :
+semaphores, monitors, producers-consumers, dinnint philosopher, thread scheduler, wait queues, barriers, etc.
+
+Mutex is all about Mutual exclusion
+and CV is about checking if conditions are met or not. if met then only allow acces otherwise block the call. CV + Mutex always used together.
+CV is used for co-ordination between threads. pthread_cond_wait is used to block thread if condition is not met. pthread_cond_signal is used to signal blocked thread.
 
 
