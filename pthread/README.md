@@ -508,3 +508,17 @@ if(predicate()){
     pthread_cond_signal(&cv);
 }
 pthread_mutex_unlock(&mutex)
+
+- CV is associated with mutex and predicate
+many cv can be associated with one mutex at a time.
+but, one cv can not be associated with more than 1 mutex at a time.
+
+Mutex is the property of resource always.
+CV can be property of the shared resource or the thread. // if cv is property of shared resource or say just one cv for multiple thread,
+then signaling thread will use this single cv to awake the thread, but which waiting thread will be awaken, that's totally depending on scheduler.
+// supposed all thread has their own CVs(CV1, CV2, CV3 for example.). then there will be no dilemma in unblocking the thread using signal. because signallling thread will give specific cv name as arg to pthread_cond_signal(&CVx), giving developer the choice to deal with threads as he or she wants.
+in other words, if threads share same CV then that CV becomes the property of resource, otherwise it will be peroperty of thread itself.
+
+- pthead_cond_broadcast(&cv);
+this api will signal all the threads and work run each blocked thread 1 by 1.
+basically it helps programmer to write just 1 statement instead of 3 in case 3 threads are blocked and each waiting for pthread_cond_signal() call.
