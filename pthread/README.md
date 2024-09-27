@@ -102,7 +102,7 @@ resource and context switch is a costly operation.
 -- Concurrency achieved -- overlapping or non-overlapping threads, same CPU.
 
 - *Joinable threads*
-When a thread is created it can be started in two modes. joinable or detachable. if a thread is crated using joinable mode, then on returning or pthread_exit() it will notify main thread or parent thread, which may or may not be waiting for the further process suing pthread_join() call. Resource will only get released if jonable thread joins the main thread. So, right way to program is use pthred join for waiting on joinable thread. 
+When a thread is created it can be started in two modes. joinable or detachable. if a thread is crated using joinable mode, then on returning or pthread_exit() it will notify main thread or parent thread, which may or may not be waiting for the further process using pthread_join() call. Resource will only get released if jonable thread joins the main thread. So, right way to program is use pthred join for waiting on joinable thread. 
 -- Joinable can also be converted to detachable and vice-versa.
 -- By default threads are joinable threads.
 -- Joinee thread or parent thread may also collect return values from joinable.
@@ -126,7 +126,7 @@ programming conecpt based on divide and conquere paradigm.
 -- Independent worker which is not supposed to notify or provide results to anyone, then such threads should be made detached while creation.
 -- when nobody care about thread's death.
 e.g. -- All infinite loop threads.
-thread waiting in while for netowrk packet or user Input
+thread waiting in while for network packet or user Input
 -- TCP server's worker thread working with tcp clients, mostly.
 
 - Thread communincations
