@@ -7,13 +7,13 @@
 - Parent thread -- creator of a new thread
 - Child thread -- created thread
 
-- If main thread terminates then all the child threats terminates.
+- If main thread terminates then all the child threads terminates.
 
 - Race condition : after the forking point, which thread is going to get executed
 that's indeterministic. This is called as race condition.
 
 - Methods for thread termination
-1. pthred_exit() call by the thread. (child thread will keep running in this way)
+1. pthred_exit() call by the thread. (child thread will keep running in this way if parent exit)
 2. Exit of thread function. (return 0 in main 
 will kill child threads as process is ending itself.)
 3. Cancellation request from other thread.
