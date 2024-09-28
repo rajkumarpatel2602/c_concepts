@@ -527,6 +527,9 @@ if(predicate()){
 }
 pthread_mutex_unlock(&mutex) // 6. release the lock
 
+// consumer - producer problem scenario
+https://www.udemy.com/course/multithreading_parta/learn/lecture/24815736#overview 
+
 - CV is associated with mutex and predicate
 many cv can be associated with one mutex at a time.
 but, one cv can not be associated with more than 1 mutex at a time.
