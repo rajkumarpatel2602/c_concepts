@@ -550,3 +550,13 @@ basically it helps programmer to write just 1 statement instead of 3 in case 3 t
 - in case of spin lock, if incoming thread t2 is waiting for t1 to release the resource, it will keep on executing thread t2 with NOP instruction and will not be swapped out.
 - pthread_spin_lock()
 - pthread_spin_unlock()
+
+
+PROBLEM encountered sofar
+1. accessing hall with 10Guest capacity
+2. producer - consumer problme with 2 producer and 2 consumer
+3. strict alternation
+4. listerner threads // server threads
+5. write a program to print odd and even number by 2 threads. (zero semaphore to avoid race condition)
+   
+thread barriers, thread scheduler, thread pools, thread monitors and semaphores are created using mutex and conditional variable.
