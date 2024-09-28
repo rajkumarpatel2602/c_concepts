@@ -559,4 +559,5 @@ PROBLEM encountered sofar
 4. listerner threads // server threads
 5. write a program to print odd and even number by 2 threads. (zero semaphore to avoid race condition)
    
-thread barriers, thread scheduler, thread pools, thread monitors and semaphores are created using mutex and conditional variable.
+ALL THREAD SYNCRONIZATION DS ARE CONSRUCTED USING MUTEX AND CONDITIONAL VARIABLES
+thread barriers, thread scheduler, thread pools, thread monitors, wait queues and semaphores are created using mutex and conditional variable.
