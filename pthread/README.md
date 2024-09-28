@@ -512,8 +512,8 @@ consumer :
 pthread_mutex_lock(&mutex) // 1. get lock
 while(!predicate()){
     pthread_cond_wait(&cv, &mutex); // 2. release the lock and go into wait state as condition is not met
-                                    // 6. wake up as cond_signal arrived
-                                    // 7. acquire lock internally
+                                    // 5. wake up as cond_signal arrived and go from blocked to ready to run state.
+                                    // 7. acquire lock internally and proceed for data structure access.
 }
 execute_cr_code_or_ds(); // 8. working on shared queue may be the ds.
 pthread_mutex_unlock(&mutex) // 9. lock the thread again 
@@ -523,10 +523,9 @@ producer :
 pthread_mutex_lock(&mutex) // 3. get the lock as it's released by consumer
 if(predicate()){
     execute_cr_code_or_ds(); // do work
-    pthread_cond_signal(&cv); // 4. release the lock internally and 
-                              // 5. signal the consumer waiting thread
+    pthread_cond_signal(&cv); // 4. signal the consumer waiting thread
 }
-pthread_mutex_unlock(&mutex)
+pthread_mutex_unlock(&mutex) // 6. release the lock
 
 - CV is associated with mutex and predicate
 many cv can be associated with one mutex at a time.
