@@ -194,11 +194,13 @@ Pthread_mutex_unlock(&mutexOb)
 
 * Locking types
 Code and object locking
-Code — CR is made up of several instructions.
+Code — CR is made up of several instructions. if global or static data is being used then this locking is used.
 
 Object - Data locking
 When there are chances that out of many particular DS will be shared then that data structure will have mutex within and Threads will lock that per DS mutex and use it in the CR.
 Make sure this DS is not memcopied as mutex is one of its member. Otherwise behaviour would be undefined.
+if there is an utility of removing node from list, and this utility can be called from multiple thread with same or different lists as an input,
+so if list is same then data locking is required, if different lists are used then it's not critical section, as access is not happening to same object.
 
 * Deadlocks
 Necessary Conditions
@@ -379,7 +381,7 @@ set pshared = 0 for threads, for precess give ~0 value.
 
         sem_post(&sem) // Unconditionally increament PC by 1 and send signal to thread waiting on sem_wait() call, if any.
  --------------------------------
-If any thread is waiting on the sem receives the signal from thread relaseing semaphore whill simply enters the CS without 
+If any thread is waiting on the sem receives the signal from thread relaseing semaphore will simply enters the CS without 
 touching the permit count. // this will help to level the count which was changed when sem_wait() was called by blocked thread.
 
 * PC = 1 means mutx == semaphore with just one difference.
@@ -435,8 +437,8 @@ i.e. thread T1 is waiting on the empty queue for the element to get populated in
 Mutex can block on mutex availability only
 CV can block based on user variable or user defined condition's matching. on matting the condition it can also wake-up the thread waiting for the resource.
 
-Advanced thread sync schemes are implemented using semphores + CV :
-semaphores, monitors, producers-consumers, dinnint philosopher, thread scheduler, wait queues, barriers, etc.
+Advanced thread sync schemes are implemented using mutex + CV :
+semaphores, monitors, producers-consumers, dinning philosopher, thread scheduler, wait queues, barriers, etc.
 
 Mutex is all about Mutual exclusion
 and CV is about checking if conditions are met or not. if met then only allow acces otherwise block the call. CV + Mutex always used together.
