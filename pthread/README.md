@@ -543,3 +543,10 @@ in other words, if threads share same CV then that CV becomes the property of re
 - pthead_cond_broadcast(&cv);
 this api will signal all the threads and work run each blocked thread 1 by 1.
 basically it helps programmer to write just 1 statement instead of 3 in case 3 threads are blocked and each waiting for pthread_cond_signal() call.
+
+* Spin lock
+- same as mutex, except one thing. it will not get blocked, rather will keep on executing nop operation, and hence context switching will not happen, as it does in mutex case.
+- context switch is the concept of context swapping out from scheduler, but if one thread is in CR, and other thread comes and if it tries to acquire, this thread will be put to block stage.
+- in case of spin lock, if incoming thread t2 is waiting for t1 to release the resource, it will keep on executing thread t2 with NOP instruction and will not be swapped out.
+- pthread_spin_lock()
+- pthread_spin_unlock()
