@@ -434,7 +434,21 @@ conditional variables :
 allows us to have the finer control over taking the decision on when and which competing thread should be unblocked/resumed.
 i.e. thread T1 is waiting on the empty queue for the element to get populated in the queue.
 
-Mutex can block on mutex availability only
+Mutex look like:
+pthread_mutex_lock(&laptop->mutex);
+// enjoy laptop
+pthread_mutex_unlock(&laptop->mutex);
+
+CV look like:
+pthread_mutex_lock(&laptop->mutex);
+if(conditions(laptop has internet connection)){
+    wait(&cv, &laptop->mutex);
+}
+pthread_mutex_unlock(&laptop->mutex);
+
+CV uses mutex internally.
+
+Mutex can block on mutex availability only.
 CV can block based on user variable or user defined condition's matching. on matting the condition it can also wake-up the thread waiting for the resource.
 
 Advanced thread sync schemes are implemented using mutex + CV :
@@ -495,19 +509,22 @@ pseudo codes for producer consumer probelm.
 
 consumer :
 
-pthread_mutex_lock(&mutex)
+pthread_mutex_lock(&mutex) // 1. get lock
 while(!predicate()){
-    pthread_cond_wait(&cv, &mutex);    
+    pthread_cond_wait(&cv, &mutex); // 2. release the lock and go into wait state as condition is not met
+                                    // 6. wake up as cond_signal arrived
+                                    // 7. acquire lock internally
 }
-execute_cr_code_or_ds(); // working on shared queue may be the ds.
-pthread_mutex_unlock(&mutex)
+execute_cr_code_or_ds(); // 8. working on shared queue may be the ds.
+pthread_mutex_unlock(&mutex) // 9. lock the thread again 
 
 producer :
 
-pthread_mutex_lock(&mutex)
+pthread_mutex_lock(&mutex) // 3. get the lock as it's released by consumer
 if(predicate()){
-    execute_cr_code_or_ds();
-    pthread_cond_signal(&cv);
+    execute_cr_code_or_ds(); // do work
+    pthread_cond_signal(&cv); // 4. release the lock internally and 
+                              // 5. signal the consumer waiting thread
 }
 pthread_mutex_unlock(&mutex)
 
