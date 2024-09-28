@@ -510,7 +510,7 @@ pseudo codes for producer consumer probelm.
 consumer :
 
 pthread_mutex_lock(&mutex) // 1. get lock
-while(!predicate()){
+while(!predicate()){ // while to make sure we check predicate again after getting pthread_cond_signal()
     pthread_cond_wait(&cv, &mutex); // 2. release the lock and go into wait state as condition is not met
                                     // 5. wake up as cond_signal arrived and go from blocked to ready to run state.
                                     // 7. acquire lock internally and proceed for data structure access.
